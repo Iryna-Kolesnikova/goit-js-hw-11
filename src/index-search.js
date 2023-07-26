@@ -20,7 +20,7 @@ function hideLoadMoreButton() {
 }
 
 function showEndOfResultsMessage() {
-  Notiflix.Report.info("Info", "You've reached the end of search results.", "OK");
+  Notiflix.Report.info("Info", "We're sorry, but you've reached the end of search results.", "OK");
 }
 
 async function handleSearch(event) {
