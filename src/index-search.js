@@ -35,25 +35,24 @@ async function handleSearch(event) {
   try {
     currentPage = 1;
     gallery.innerHTML = '';
+    hideLoadMoreButton();
     const images = await fetchImages(searchQuery);
     if (images.totalHits === 0) {
-      Notiflix.Report.failure("Oops!", "Sorry, there are no images matching your search query. Please try again.", "OK");
-      hideLoadMoreButton(); 
+      Report.failure("Oops!", "Sorry, there are no images matching your search query. Please try again.", "OK");
     } else {
       displayImages(images.hits);
       if (images.totalHits <= perPage) {
-        hideLoadMoreButton(); 
+        hideLoadMoreButton();
       } else {
         showLoadMoreButton(); 
       }
     }
   } catch (error) {
-    Notiflix.Report.failure("Error", error.message, "OK");
-    hideLoadMoreButton();
+    Report.failure("Помилка", error.message, "OK");
+  } finally {
+    searchForm.querySelector('input[name="searchQuery"]').value = '';
   }
 }
-
-
 
 async function handleLoadMore() {
   try {
@@ -62,12 +61,13 @@ async function handleLoadMore() {
     const images = await fetchImages(searchQuery);
     displayImages(images.hits);
     if (images.totalHits <= currentPage * perPage) {
-      hideLoadMoreButton(); 
-      showEndOfResultsMessage(); 
+      hideLoadMoreButton();
+      showEndOfResultsMessage();
+    } else {
+      showLoadMoreButton();
     }
   } catch (error) {
-    Notiflix.Report.failure("Error", error.message, "OK");
-    hideLoadMoreButton(); 
+    Report.failure("Помилка", error.message, "OK");
   }
 }
 
@@ -96,7 +96,7 @@ function displayImages(images) {
     const card = document.createElement('div');
     card.classList.add('photo-card');
     card.innerHTML = `
-      <a href="${image.largeImageURL}" class="gallery__item"> <!-- Змінено обгортку на посилання для SimpleLightbox -->
+      <a href="${image.largeImageURL}" class="gallery__item"> 
         <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy">
       </a>
       <div class="info">
@@ -109,71 +109,11 @@ function displayImages(images) {
     gallery.appendChild(card);
   });
 
-
   lightbox.refresh();
 }
-async function handleSearch(event) {
-  event.preventDefault();
-  const formData = new FormData(event.target);
-  const searchQuery = formData.get('searchQuery');
 
-  if (!searchQuery) {
-    return;
-  }
+window.addEventListener('load', hideLoadMoreButton);
 
-  try {
-    currentPage = 1;
-    gallery.innerHTML = '';
-    removeLoadMoreButton(); // 
-    const images = await fetchImages(searchQuery);
-    if (images.totalHits === 0) {
-      Report.failure("Oops!", "Sorry, there are no images matching your search query. Please try again.", "OK");
-    } else {
-      loadMoreBtn.style.display = 'block';
-      displayImages(images.hits);
-    }
-  } catch (error) {
-    Report.failure("Помилка", error.message, "OK");
-  } finally {
-    searchForm.querySelector('input[name="searchQuery"]').value = '';
-  }
-}
-
-async function handleLoadMore() {
-  try {
-    currentPage++;
-    const searchQuery = document.querySelector('input[name="searchQuery"]').value;
-    const images = await fetchImages(searchQuery);
-    displayImages(images.hits);
-    if (images.totalHits <= currentPage * perPage) {
-      hideLoadMoreButton(); 
-      Report.info("Info", "We're sorry, but you've reached the end of search results.", "OK"); 
-    }
-  } catch (error) {
-    Report.failure("Помилка", error.message, "OK");
-  }
-}
-
-function removeLoadMoreButton() {
-  if (loadMoreBtn.parentNode) {
-    loadMoreBtn.parentNode.removeChild(loadMoreBtn);
-  }
-}
-
-async function handleLoadMore() {
-  try {
-    currentPage++;
-    const searchQuery = document.querySelector('input[name="searchQuery"]').value;
-    const images = await fetchImages(searchQuery);
-    displayImages(images.hits);
-    if (images.totalHits <= currentPage * perPage) {
-      loadMoreBtn.style.display = 'none';
-      Report.info("Info", "You've reached the end of search results.", "OK"); 
-    }
-  } catch (error) {
-    Report.failure("Error", error.message, "OK");
-  }
-}
 searchForm.addEventListener('submit', handleSearch);
 loadMoreBtn.addEventListener('click', handleLoadMore);
 
