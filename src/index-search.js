@@ -6,6 +6,7 @@ import SimpleLightbox from 'simplelightbox';
 const apiKey = '38421129-385ad5ee77a37193a2d5ae11d'; 
 const perPage = 40;
 let currentPage = 1;
+let currentSearchQuery = '';
 
 const searchForm = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
@@ -34,6 +35,7 @@ async function handleSearch(event) {
 
   try {
     currentPage = 1;
+    currentSearchQuery = searchQuery;
     gallery.innerHTML = '';
     hideLoadMoreButton();
     const images = await fetchImages(searchQuery);
@@ -44,7 +46,7 @@ async function handleSearch(event) {
       if (images.totalHits <= perPage) {
         hideLoadMoreButton();
       } else {
-        showLoadMoreButton(); 
+        showLoadMoreButton();
       }
     }
   } catch (error) {
@@ -57,8 +59,7 @@ async function handleSearch(event) {
 async function handleLoadMore() {
   try {
     currentPage++;
-    const searchQuery = document.querySelector('input[name="searchQuery"]').value;
-    const images = await fetchImages(searchQuery);
+    const images = await fetchImages(currentSearchQuery);
     displayImages(images.hits);
     if (images.totalHits <= currentPage * perPage) {
       hideLoadMoreButton();
@@ -85,6 +86,11 @@ async function fetchImages(query) {
         page: currentPage
       },
     });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to fetch images.');
+    }
+
     return response.data;
   } catch (error) {
     throw new Error('Failed to fetch images.');
