@@ -37,7 +37,7 @@ function handleSubmit(event) {
       createGallery(images);
     })
     .catch(error => {
-      console.log(error);
+      iziToast.error({ message: error.message });
     })
     .finally(() => {
       hideLoader();
