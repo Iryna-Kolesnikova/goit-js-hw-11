@@ -16,11 +16,15 @@ form.addEventListener('submit', handleSubmit);
 function handleSubmit(event) {
   event.preventDefault();
   const query = event.target.elements['search-text'].value.trim();
+  if (!query) {
+    iziToast.error({ message: 'Please enter a search query' });
+    return;
+  }
   clearGallery();
   showLoader();
   getImagesByQuery(query)
     .then(response => {
-      const images = response.data.hits;
+      const images = response.hits;
 
       if (images.length === 0) {
         iziToast.error({

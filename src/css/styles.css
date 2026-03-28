@@ -97,3 +97,11 @@ body {
 .gallery img:hover {
   transform: scale(1.05);
 }
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  font-size: 12px;
+  background: #fafafa;
+}
