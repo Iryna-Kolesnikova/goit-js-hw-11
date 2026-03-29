@@ -78,7 +78,7 @@ async function handleLoadMore() {
     const images = data.hits;
 
     createGallery(images);
-    if (page * perPage >= data.totalHits) {
+    if (page * perPage < data.totalHits) {
       showLoadMoreButton();
     } else {
       hideLoadMoreButton();
