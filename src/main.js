@@ -69,7 +69,7 @@ async function handleSubmit(event) {
 
 async function handleLoadMore() {
   page += 1;
-
+  hideLoadMoreButton();
   showLoader();
 
   try {
@@ -79,6 +79,8 @@ async function handleLoadMore() {
 
     createGallery(images);
     if (page * perPage >= data.totalHits) {
+      showLoadMoreButton();
+    } else {
       hideLoadMoreButton();
 
       iziToast.info({
